@@ -6,6 +6,7 @@ import java.util.List;
 import com.example.classmanagersystem.MainActivity;
 import com.example.classmanagersystem.R;
 import com.example.classmanagersystem.helper.MySqlHelper;
+import com.example.classmanagersystem.StudentInformationManagerActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -129,12 +130,46 @@ public class MainActivity extends Activity {
 	}
 	//登录
 	public void login() {
+		Cursor cursor1 = db.rawQuery(
+				"select count(*) from user where username = '"
+						+ userName.getText().toString() + "'", null);
+		cursor1.moveToNext();
+		int count = cursor1.getInt(0);
+		if (count == 1) {
+			Cursor cursor = db.rawQuery(
+					"select username,password from user where username = '"
+							+ userName.getText().toString() + "'", null);
+			cursor.moveToNext();
+			if ((userName.getText().toString()).equals(cursor.getString(0)
+					.toString())
+				) {
+				Toast.makeText(MainActivity.this, "登录成功！", Toast.LENGTH_SHORT)
+						.show();
+				Intent intent = new Intent(MainActivity.this,
+						StudentInformationManagerActivity.class);
+				startActivity(intent);
+				Cursor cursor2 = db.rawQuery(
+						"select count(*) from loginhistory where name = '"
+								+ userName.getText().toString() + "'", null);
+				cursor2.moveToNext();
+				int count2 = cursor2.getInt(0);
+				if (count2 == 0) {
+					ContentValues values = new ContentValues();
+					values.put("name", userName.getText().toString());
+					db.insert("loginhistory", null, values);
+				}
+			} else {
+				Toast.makeText(MainActivity.this, "您输入的用户名或密码错误！",
+						Toast.LENGTH_SHORT).show();
+			}
+			cursor.close();
+		} else {
+			Toast.makeText(MainActivity.this, "您输入的用户名或密码错误！",
+					Toast.LENGTH_SHORT).show();
+		}
+		cursor1.close();
+	}
 
-		Intent intent = new Intent(MainActivity.this,
-				StudentInformationManagerActivity.class);
-		startActivity(intent);
-
-}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
