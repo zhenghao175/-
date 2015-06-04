@@ -71,7 +71,7 @@ public class StudentInformationManagerActivity extends Activity {
 	private AutoCompleteTextView serach_edit;
 	private List<String> lists = new ArrayList<String>();
 	private ActionBar actionBar;
-	private JSONArray jsonArray;
+
 	private ImageView stu_headimage;
 
 	@Override
@@ -282,12 +282,7 @@ public class StudentInformationManagerActivity extends Activity {
 		});
 	}
 
-	public void userMana() {
-		Intent intent = new Intent(StudentInformationManagerActivity.this,
-				UserManage.class);
-		startActivity(intent);
-	}
-
+	
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
@@ -358,54 +353,7 @@ public class StudentInformationManagerActivity extends Activity {
 		}
 	};
 
-	public void jsonDownload(){
-		StringBuffer stringBuffer = new StringBuffer();
-		try {
-			InputStream inStream = getResources().openRawResource(R.raw.student);
-			BufferedReader bfReader = new BufferedReader(new InputStreamReader(
-					inStream, "GBK"));
-
-			String strLine = "";
-			while ((strLine=bfReader.readLine()) != null) {
-				stringBuffer.append(strLine);
-			}
-			jsonArray = new JSONArray(stringBuffer.toString());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		for(int i = 0;i < jsonArray.length();i++){
-			try {
-				JSONObject object = jsonArray.getJSONObject(i);
-				Bitmap bitmap = ((BitmapDrawable) getResources().getDrawable(
-						R.drawable.image)).getBitmap();
-				//Bitmap bitmap = ((BitmapDrawable)headimage.getDrawable()).getBitmap();
-				ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-				// 压缩bitmap到ByteArrayOutputStream
-				bitmap.compress(CompressFormat.PNG, 100, byteOut);
-				ContentValues values = new ContentValues();
-				values.put("name", object.getString("name"));
-				values.put("sex", object.getString("sex"));
-				values.put("mingzu", object.getString("mingzu"));
-				values.put("id", object.getString("id"));
-				values.put("birthday",object.getString("birthday"));
-				values.put("phone", object.getString("phone"));
-				values.put("more", object.getString("more"));
-				values.put("image", byteOut.toByteArray());
-				db.insert("student", null, values);
-				
-				
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		Toast.makeText(StudentInformationManagerActivity.this, "导入成功，请刷新！", Toast.LENGTH_SHORT).show();
-	}
+	
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -466,15 +414,11 @@ public class StudentInformationManagerActivity extends Activity {
 		case R.id.stu_ref:
 			onResume();
 			break;
-		case R.id.user_ma:
-			userMana();
-			break;
+
 		case R.id.stu_smsall:
 			sms_all();
 			break;
-		case R.id.stu_json:
-			jsonDownload();
-			break;
+		
 
 		}
 		return super.onOptionsItemSelected(item);
