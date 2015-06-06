@@ -26,21 +26,13 @@
                     android:icon="@drawable/refreshstudent_image"
                     android:title="刷新">
                 </item>
-                <item
-                    android:id="@+id/user_ma"
-                    android:icon="@drawable/user_image"
-                    android:title="管理用户">
-                </item>
+             
                 <item
                     android:id="@+id/stu_smsall"
                     android:icon="@drawable/sms_all"
                     android:title="短信群发">
                 </item>
-                <item
-                    android:id="@+id/stu_json"
-                    android:icon="@drawable/jsondown"
-                    android:title="json导入数据库">
-                </item>
+            
         </menu>
     </item>
 

@@ -1,5 +1,7 @@
 package com.example.classmanagersystem;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,7 +37,6 @@ public class MainActivity extends Activity {
 	private Button btn_exit;
 	private MySqlHelper mySqlHelper;
 	private SQLiteDatabase db;
-
 	private List<String> lists = new ArrayList<String>();
 
 	@Override
@@ -43,16 +45,31 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		mySqlHelper = new MySqlHelper(MainActivity.this, "student_inf.db",
 				null, 1);
-		
 		db = mySqlHelper.getWritableDatabase();
+		
+		Cursor cursorstu = db.rawQuery("select * from loginhistory", null);
+		while (cursorstu.moveToNext()) {
+			lists.add(cursorstu.getString(1));
+		}
+
+		// System.out.println(lists.get(0).toString());
+		userName = (AutoCompleteTextView) findViewById(R.id.userName);
+		userName.setThreshold(1);
+		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+				MainActivity.this, android.R.layout.simple_list_item_1, lists);
+		userName.setAdapter(arrayAdapter);
+		//把登陆历史赋给autocomplete 的item
+		
+		userPassword = (EditText) findViewById(R.id.userPassword);
 		btn_register = (Button) findViewById(R.id.register);
 		btn_login = (Button) findViewById(R.id.login);
 		btn_exit = (Button) findViewById(R.id.exit);
+		
 		btn_register.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
+				
 				showMyDialog();
 			}
 		});
@@ -66,6 +83,15 @@ public class MainActivity extends Activity {
 				login();
 			}
 		});	
+		
+		btn_exit.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				finish();
+			}
+		});
 	}
 
 	//注册
@@ -73,13 +99,16 @@ public class MainActivity extends Activity {
 		Builder builder = new Builder(MainActivity.this);
 		LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
 		View view = inflater.inflate(R.layout.registerlayout, null);
+		
 		Button btn_confirm = (Button) view.findViewById(R.id.btn_confirm);
 		Button btn_back = (Button) view.findViewById(R.id.btn_back);
+		
 		final EditText editUserName = (EditText) view
 				.findViewById(R.id.editText1);
 		final EditText editPswd = (EditText) view.findViewById(R.id.editText2);
 		final EditText editPswd_confirm = (EditText) view
 				.findViewById(R.id.editText3);
+		
 		final AlertDialog dialog = builder.setTitle("学生信息注册").setView(view)
 				.create();
 
@@ -100,7 +129,7 @@ public class MainActivity extends Activity {
 						ContentValues values = new ContentValues();
 						values.put("username", editUserName.getText()
 								.toString());
-						
+						values.put("password", MD5(editPswd.getText().toString()));
 						db.insert("user", null, values);
 						dialog.dismiss();
 						Toast.makeText(MainActivity.this, "注册成功！",
@@ -142,9 +171,11 @@ public class MainActivity extends Activity {
 			cursor.moveToNext();
 			if ((userName.getText().toString()).equals(cursor.getString(0)
 					.toString())
-				) {
+					&& (MD5(userPassword.getText().toString())).equals(cursor
+							.getString(1).toString())) {
 				Toast.makeText(MainActivity.this, "登录成功！", Toast.LENGTH_SHORT)
 						.show();
+				//进入下一个界面
 				Intent intent = new Intent(MainActivity.this,
 						StudentInformationManagerActivity.class);
 				startActivity(intent);
@@ -172,8 +203,33 @@ public class MainActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		
 		getMenuInflater().inflate(R.menu.main, menu);
+		//菜单布局填充
 		return true;
 	}
-	
+
+	// MD5加密
+	public static String MD5(String string) {
+		return encodeMD5String(string);
+	}
+
+	public static String encodeMD5String(String str) {
+		return encode(str, "MD5");
+	}
+
+	private static String encode(String str, String method) {
+		MessageDigest md = null;
+		String dstr = null;
+		try {
+			md = MessageDigest.getInstance(method);
+			md.update(str.getBytes());
+			dstr = new BigInteger(1, md.digest()).toString(16);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return dstr;
+	}
+
 }
+

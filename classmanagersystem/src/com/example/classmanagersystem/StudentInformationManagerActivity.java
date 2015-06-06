@@ -12,7 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.ActionBar;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -70,7 +70,6 @@ public class StudentInformationManagerActivity extends Activity {
 	private String updateName;
 	private AutoCompleteTextView serach_edit;
 	private List<String> lists = new ArrayList<String>();
-	private ActionBar actionBar;
 
 	private ImageView stu_headimage;
 
@@ -84,10 +83,7 @@ public class StudentInformationManagerActivity extends Activity {
 				"student_inf.db", null, 1);
 		db = mySqlHelper.getWritableDatabase();
 
-		actionBar = getActionBar();
-		actionBar.setDisplayShowHomeEnabled(false);
-		actionBar.setHomeButtonEnabled(false);
-		actionBar.setDisplayShowTitleEnabled(false);
+	
 
 		checkboxsum = (CheckBox) findViewById(R.id.checkboxsum);
 		checkboxsum.setOnCheckedChangeListener(new OnCheckedChangeListener() {
